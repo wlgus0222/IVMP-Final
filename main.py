@@ -226,7 +226,7 @@ def game_loop(file_name, beatmap, ending_time):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                press_sound = pygame.mixer.Sound('drum3.ogg')
+                press_sound = pygame.mixer.Sound('beat.ogg')
                 press_sound.play()
                 if event.key == pygame.K_a:
                     keypressA = True
