@@ -28,9 +28,9 @@ pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-strum = pygame.image.load('notestrum.png')
+strum = pygame.image.load('assets/notestrum.png')
 
-pressed = pygame.image.load('pressed.png')
+pressed = pygame.image.load('assets/pressed.png')
 
 pygame.display.set_caption('20201914 PLAYBEATS!!')
 
@@ -68,11 +68,11 @@ class Button():
             return False
 
 def main_menu():
-    menu_text = pygame.font.Font("RetroGaming.ttf", 100).render("PLAYBEATS!!", True, WHITE)
+    menu_text = pygame.font.Font("assets/RetroGaming.ttf", 100).render("PLAYBEATS!!", True, WHITE)
     menu_rect = menu_text.get_rect(center=(400, 100))
 
-    level1_button = Button(pos=(400, 250), text_input="Level 1", font=pygame.font.Font("RetroGaming.ttf", 60), base_color=BLUE, hover_color=WHITE)
-    level2_button = Button(pos=(400, 400), text_input="Level 2", font=pygame.font.Font("RetroGaming.ttf", 60), base_color=BLUE, hover_color=WHITE)
+    level1_button = Button(pos=(400, 250), text_input="Level 1", font=pygame.font.Font("assets/RetroGaming.ttf", 60), base_color=BLUE, hover_color=WHITE)
+    level2_button = Button(pos=(400, 400), text_input="Level 2", font=pygame.font.Font("assets/RetroGaming.ttf", 60), base_color=BLUE, hover_color=WHITE)
 
     while True:
         screen.fill(BLACK)
@@ -95,9 +95,9 @@ def main_menu():
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if level1_button.checkForInput(pos):
-                    initialize('easy', "AJourneyAwaits.mp3")
+                    initialize('easy', "assets/AJourneyAwaits.mp3")
                 elif level2_button.checkForInput(pos):
-                    initialize('hard', "CyberpunkMoonlightSonata.mp3")
+                    initialize('hard', "assets/CyberpunkMoonlightSonata.mp3")
                     
 
         pygame.display.update()
@@ -112,27 +112,27 @@ class Note(pygame.sprite.Sprite):
         self.hit = False
         self.difference = -2000000
         if position == 1:
-            self.image = pygame.image.load('noteA.png')
+            self.image = pygame.image.load('assets/noteA.png')
             self.rect = self.image.get_rect()
             self.rect.move_ip(POSITION_A, -100)
         if position == 2:
-            self.image = pygame.image.load('noteB.png')
+            self.image = pygame.image.load('assets/noteB.png')
             self.rect = self.image.get_rect()
             self.rect.move_ip(POSITION_B, -100)
         if position == 3:
-            self.image = pygame.image.load('noteC.png')
+            self.image = pygame.image.load('assets/noteC.png')
             self.rect = self.image.get_rect()
             self.rect.move_ip(POSITION_C, -100)
         if position == 4:
-            self.image = pygame.image.load('noteC.png')
+            self.image = pygame.image.load('assets/noteC.png')
             self.rect = self.image.get_rect()
             self.rect.move_ip(POSITION_D, -100)
         if position == 5:
-            self.image = pygame.image.load('noteB.png')
+            self.image = pygame.image.load('assets/noteB.png')
             self.rect = self.image.get_rect()
             self.rect.move_ip(POSITION_E, -100)
         if position == 6:
-            self.image = pygame.image.load('noteA.png')
+            self.image = pygame.image.load('assets/noteA.png')
             self.rect = self.image.get_rect()
             self.rect.move_ip(POSITION_F, -100)
 
@@ -157,12 +157,17 @@ class Note(pygame.sprite.Sprite):
             self.rect.centery = shift
 
 def combo_count(amount):
-    font = pygame.font.Font("RetroGaming.ttf", 40)
+    font = pygame.font.Font("assets/RetroGaming.ttf", 40)
     text = font.render( f"Combo: {amount}", True, WHITE)
     screen.blit(text, (20, 20))
 
+def multiplier_count(amount):
+    font = pygame.font.Font("assets/RetroGaming.ttf", 30)
+    text = font.render( f"x{amount}", True, WHITE)
+    screen.blit(text, (20, 70))
+
 def score_count(score_amount):
-    font = pygame.font.Font("RetroGaming.ttf", 40)
+    font = pygame.font.Font("assets/RetroGaming.ttf", 40)
     text = font.render(f"{score_amount}", True, WHITE)
     screen.blit(text, (630, 20))
 
@@ -181,6 +186,7 @@ def game_loop(file_name, beatmap, ending_time):
 
     combo = 0
     score = 0
+    multiplier = 1
 
     keypressA = False
     keypressS = False
@@ -226,7 +232,7 @@ def game_loop(file_name, beatmap, ending_time):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                press_sound = pygame.mixer.Sound('beat.ogg')
+                press_sound = pygame.mixer.Sound('assets/beat.ogg')
                 press_sound.play()
                 if event.key == pygame.K_a:
                     keypressA = True
@@ -267,8 +273,18 @@ def game_loop(file_name, beatmap, ending_time):
             mostaccurate = (mostaccurate + songtime)/2
             lastplayheadposition = songtime
 
+        if combo < 10:
+            multiplier = 1
+        if 10 <= combo < 20:
+            multiplier = 2
+        elif 20 <= combo < 30:
+            multiplier = 3
+        elif 30 <= combo:
+            multiplier = 4
+
         screen.fill(BLACK)
         combo_count(combo)
+        multiplier_count(multiplier)
         score_count(score)
 
         if keypressA:
@@ -299,7 +315,7 @@ def game_loop(file_name, beatmap, ending_time):
             statusa = note.difference
             if -500 <= statusa <= 500:
                 combo += 1
-                score += 100
+                score += 100 * multiplier
             elif statusa == -1000000:
                 combo = 0
 
@@ -309,7 +325,7 @@ def game_loop(file_name, beatmap, ending_time):
             statusb = note.difference
             if -500 <= statusb <= 500:
                 combo += 1
-                score += 100
+                score += 100 * multiplier
             elif statusb == -1000000:
                 combo = 0
 
@@ -319,7 +335,7 @@ def game_loop(file_name, beatmap, ending_time):
             statusc = note.difference
             if -500 <= statusc <= 500:
                 combo += 1
-                score += 100
+                score += 100 * multiplier
             elif statusc == -1000000:
                 combo = 0
 
@@ -329,7 +345,7 @@ def game_loop(file_name, beatmap, ending_time):
             statusd = note.difference
             if -500 <= statusd <= 500:
                 combo += 1
-                score += 100
+                score += 100 * multiplier
             elif statusd == -1000000:
                 combo = 0
 
@@ -339,7 +355,7 @@ def game_loop(file_name, beatmap, ending_time):
             statuse = note.difference
             if -500 <= statuse <= 500:
                 combo += 1
-                score += 100
+                score += 100 * multiplier
             elif statuse == -1000000:
                 combo = 0
 
@@ -349,7 +365,7 @@ def game_loop(file_name, beatmap, ending_time):
             statusf = note.difference
             if -500 <= statusf <= 500:
                 combo += 1
-                score += 100
+                score += 100 * multiplier
             elif statusf == -1000000:
                 combo = 0
 
