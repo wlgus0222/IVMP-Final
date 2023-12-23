@@ -2,5 +2,6 @@
 # Final Project: PLAYBEATS!!
 Rhythm Game made with Pygame on Visual Studio Code by Park Jihyun.
 
-Test Play Video:
-https://youtu.be/hiGp6pt1_78
+Trailer Video:
+https://youtu.be/2Rl2qUNtXPI
+
